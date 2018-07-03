@@ -11,46 +11,57 @@ var app = express();
 var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json);
+app.use(bodyParser.json());
 
-var jobRouter = express.Router();
-jobRouter
-  .route("/Jobs")
-  .post(function(re, res) {
-    var job = new Job();
-  })
-  .get(function(re, res) {
-    var query = {};
-    if (req.query.company) {
-      query.company = req.query.company;
-    }
-
-    if (req.query.title) {
-      query.title = req.query.title;
-    }
-
-    if (req.query.department) {
-      query.department = req.query.department;
-    }
-
-    if (req.query.group) {
-      query.group = req.query.grpup;
-    }
-
-    Job.find(query, function(err, jobs) {
-      if (err) console.log(err);
-      else res.json(jobs);
-    });
-  });
-
-jobRouter.route("/jobs/:jobId").get(function(re, res) {
-  Job.findById(req.params.jobId, function(err, job) {
-    if (err) console.log(err);
-    else res.json(job);
-  });
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
 });
 
-app.use("/api", jobRouter);
+var jobRouter = express.Router();
+jobRouter = require("./routes/job-router")(Job);
+
+//   .route("/Jobs")
+//   .post(function(req, res) {
+//     var job = new Job(req.body);
+//     console.log(job);
+//   })
+//   .get(function(re, res) {
+//     var query = {};
+//     // if (req.query.company) {
+//     //   query.company = req.query.company;
+//     // }
+
+//     // if (req.query.title) {
+//     //   query.title = req.query.title;
+//     // }
+
+//     // if (req.query.department) {
+//     //   query.department = req.query.department;
+//     // }
+
+//     // if (req.query.group) {
+//     //   query.group = req.query.grpup;
+//     // }
+
+//     Job.find(query, function(err, jobs) {
+//       if (err) console.log(err);
+//       else res.json(jobs);
+//     });
+//   });
+
+// jobRouter.route("/jobs/:jobId").get(function(req, res) {
+//   Job.findById(req.params.jobId, function(err, job) {
+//     if (err) console.log(err);
+//     else res.json(job);
+//   });
+// });
+
+app.use("/jobs", jobRouter);
 
 //
 app.get("/", function(req, res) {
