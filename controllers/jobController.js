@@ -1,7 +1,7 @@
 var jobController = function(Job) {
   var post = function(req, res) {
     var job = new Job(req.body);
-    job.date = Date.now();
+    job.date_posted = Date.now();
     job.save();
     console.log(job);
     res.status(201).send(job);

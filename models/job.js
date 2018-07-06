@@ -14,7 +14,10 @@ var job = new Schema({
   date_posted: {
     type: Date
   },
-  location: {
+  city: {
+    type: String
+  },
+  country: {
     type: String
   },
   department: {
