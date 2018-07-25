@@ -23,7 +23,7 @@ var job = new Schema({
   department: {
     type: String
   },
-  group: {
+  category: {
     type: String
   },
   website: {
