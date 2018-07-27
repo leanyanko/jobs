@@ -13,6 +13,36 @@ var port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// AUTHENTICATION
+  
+function auth (req, res, next) {
+  console.log(req.headers);
+  var authHeader = req.headers.authorization;
+  if (!authHeader) {
+      var err = new Error('You are not authenticated!');
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      next(err);
+      return;
+  }
+
+  var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+  var user = auth[0];
+  var pass = auth[1];
+  if (user == 'admin' && pass == 'password') {
+      next(); // authorized
+  } else {
+      var err = new Error('You are not authenticated!');
+      res.setHeader('WWW-Authenticate', 'Basic');      
+      err.status = 401;
+      next(err);
+  }
+}
+
+app.use(auth);
+
+// EVERYTHING AFTER IS AFTER AUTH
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -25,45 +55,8 @@ app.use(function(req, res, next) {
 var jobRouter = express.Router();
 jobRouter = require("./routes/job-router")(Job);
 
-//   .route("/Jobs")
-//   .post(function(req, res) {
-//     var job = new Job(req.body);
-//     console.log(job);
-//   })
-//   .get(function(re, res) {
-//     var query = {};
-//     // if (req.query.company) {
-//     //   query.company = req.query.company;
-//     // }
-
-//     // if (req.query.title) {
-//     //   query.title = req.query.title;
-//     // }
-
-//     // if (req.query.department) {
-//     //   query.department = req.query.department;
-//     // }
-
-//     // if (req.query.group) {
-//     //   query.group = req.query.grpup;
-//     // }
-
-//     Job.find(query, function(err, jobs) {
-//       if (err) console.log(err);
-//       else res.json(jobs);
-//     });
-//   });
-
-// jobRouter.route("/jobs/:jobId").get(function(req, res) {
-//   Job.findById(req.params.jobId, function(err, job) {
-//     if (err) console.log(err);
-//     else res.json(job);
-//   });
-// });
-
 app.use("/jobs", jobRouter);
 
-//
 app.get("/", function(req, res) {
   res.send("welcome to my api");
 });
