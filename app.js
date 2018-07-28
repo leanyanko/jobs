@@ -1,6 +1,7 @@
 var express = require("express");
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser');
 
 var db = mongoose.connect(
   "mongodb://heroku_8r5bwnlw:ruup4j4krv9pr1j75m9ghi7rrm@ds125021.mlab.com:25021/heroku_8r5bwnlw"
@@ -12,30 +13,47 @@ var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+const key = '1234-5678-90';
+app.use(cookieParser(key));
 
 // AUTHENTICATION
   
 function auth (req, res, next) {
-  console.log(req.headers);
-  var authHeader = req.headers.authorization;
-  if (!authHeader) {
+  console.log(req.signedCookies);
+  if (!req.signedCookies.user) {
+
+    var authHeader = req.headers.authorization;
+    if (!authHeader) {
+        var err = new Error('You are not authenticated!');
+        res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 401;
+        next(err);
+        return;
+    }
+
+    var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    var user = auth[0];
+    var pass = auth[1];
+    if (user == 'admin' && pass == 'password') {
+      res.cookie('user', 'admin', {signed: true});
+        next(); // authorized
+    } else {
+        var err = new Error('You are not authenticated!');
+        res.setHeader('WWW-Authenticate', 'Basic');      
+        err.status = 401;
+        next(err);
+    }
+  }
+  else {
+    if (req.signedCookies.user === 'admin') {
+      next();
+    } 
+    else {
       var err = new Error('You are not authenticated!');
       res.setHeader('WWW-Authenticate', 'Basic');
       err.status = 401;
-      next(err);
-      return;
-  }
-
-  var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
-  var user = auth[0];
-  var pass = auth[1];
-  if (user == 'admin' && pass == 'password') {
-      next(); // authorized
-  } else {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');      
-      err.status = 401;
-      next(err);
+      return next(err);
+    }
   }
 }
 
