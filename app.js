@@ -4,6 +4,8 @@ var bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 var db = mongoose.connect(
   "mongodb://heroku_8r5bwnlw:ruup4j4krv9pr1j75m9ghi7rrm@ds125021.mlab.com:25021/heroku_8r5bwnlw"
@@ -26,13 +28,17 @@ app.use(session({
   store: new fileStore()
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 // AUTHENTICATION
   
 app.use('/users', users);
 function auth (req, res, next) {
  console.log(req.session);
 
-if (!req.session.user) {
+// if (!req.session.user) {
+  if (!req.user) {
   //  var authHeader = req.headers.authorization;
   //   if (!authHeader) {
         var err = new Error('You are not authenticated!');
@@ -58,16 +64,16 @@ if (!req.session.user) {
   // }
   else {
      // if (req.signedCookies.user === 'authenticated') {
-      if (req.session.user === 'authenticated') {
+  //    if (req.session.user === 'authenticated') {
         next();
-      } 
-      else {
-        var err = new Error('You are not authenticated!');
-      //  res.setHeader('WWW-Authenticate', 'Basic');
-        err.status = 403;
-        return next(err);
-     // }
-    }
+    //   } 
+    //   else {
+    //     var err = new Error('You are not authenticated!');
+    //   //  res.setHeader('WWW-Authenticate', 'Basic');
+    //     err.status = 403;
+    //     return next(err);
+    //  // }
+    // }
   }
 }
 
