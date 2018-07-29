@@ -2,57 +2,71 @@ var express = require("express");
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
 
 var db = mongoose.connect(
   "mongodb://heroku_8r5bwnlw:ruup4j4krv9pr1j75m9ghi7rrm@ds125021.mlab.com:25021/heroku_8r5bwnlw"
 );
 
 var Job = require("./models/job");
+var users = require ('./routes/users');
 var app = express();
 var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const key = '1234-5678-90';
-app.use(cookieParser(key));
+//app.use(cookieParser(key));
+app.use(session({
+  name: 'session-id',
+  secret: key,
+  saveUninitialized: false,
+  resave: false,
+  store: new fileStore()
+}));
 
 // AUTHENTICATION
   
+app.use('/users', users);
 function auth (req, res, next) {
-  console.log(req.signedCookies);
-  if (!req.signedCookies.user) {
+ console.log(req.session);
 
-    var authHeader = req.headers.authorization;
-    if (!authHeader) {
+if (!req.session.user) {
+  //  var authHeader = req.headers.authorization;
+  //   if (!authHeader) {
         var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');
-        err.status = 401;
-        next(err);
-        return;
+       // res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 403;
+        return next(err);
+       // return;
     }
 
-    var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
-    var user = auth[0];
-    var pass = auth[1];
-    if (user == 'admin' && pass == 'password') {
-      res.cookie('user', 'admin', {signed: true});
-        next(); // authorized
-    } else {
-        var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');      
-        err.status = 401;
-        next(err);
-    }
-  }
+    // var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    // var user = auth[0];
+    // var pass = auth[1];
+    // if (user == 'admin' && pass == 'password') {
+    //  // res.cookie('user', 'admin', {signed: true});
+    //  req.session.user = 'admin';
+    //     next(); // authorized
+    // } else {
+    //     var err = new Error('You are not authenticated!');
+    //     res.setHeader('WWW-Authenticate', 'Basic');      
+    //     err.status = 401;
+    //     next(err);
+    // }
+  // }
   else {
-    if (req.signedCookies.user === 'admin') {
-      next();
-    } 
-    else {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err);
+     // if (req.signedCookies.user === 'authenticated') {
+      if (req.session.user === 'authenticated') {
+        next();
+      } 
+      else {
+        var err = new Error('You are not authenticated!');
+      //  res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 403;
+        return next(err);
+     // }
     }
   }
 }
