@@ -1,4 +1,5 @@
 var express = require("express");
+const authenticate = require('../authenticate');
 
 var routes = function(Job) {
   var jobRouter = express.Router();
@@ -6,9 +7,9 @@ var routes = function(Job) {
   var jobController = require("../controllers/jobController")(Job);
   jobRouter
     .route("/")
-    .post(jobController.post)
+    .post(authenticate.verifyUser, jobController.post)
     .get(jobController.get)
-    .delete(function(req, res) {
+    .delete(authenticate.verifyUser, function(req, res) {
       Job.find(function(err, jobs) {});
     });
 
@@ -29,7 +30,7 @@ var routes = function(Job) {
     .get(function(req, res) {
       res.json(req.job);
     })
-    .put(function(req, res) {
+    .put(authenticate.verifyUser, function(req, res) {
       req.job.title = req.body.title;
       req.job.text = req.body.text;
       if (req.body.images) req.job.images.push(req.body.images);
@@ -40,7 +41,7 @@ var routes = function(Job) {
       });
       res.json(req.job);
     })
-    .patch(function(req, res) {
+    .patch(authenticate.verifyUser, function(req, res) {
       if (req.body._id) delete req.body._id;
       for (p in req.body) {
         req.job[p] = req.body[p];
@@ -50,7 +51,7 @@ var routes = function(Job) {
         else res.json(req.job);
       });
     })
-    .delete(function(req, res) {
+    .delete(authenticate.verifyUser, function(req, res) {
       req.job.remove(function(err) {
         if (err) res.status(500).send(err);
         else res.status(204).send("removed");

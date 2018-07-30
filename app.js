@@ -6,9 +6,15 @@ var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
+var config = require('./config');
 
+const url = config.mongoUrl;
 var db = mongoose.connect(
-  "mongodb://heroku_8r5bwnlw:ruup4j4krv9pr1j75m9ghi7rrm@ds125021.mlab.com:25021/heroku_8r5bwnlw"
+  url
+    //  url, {
+    //    useMongoClient: true
+    //  }
+  // "mongodb://heroku_8r5bwnlw:ruup4j4krv9pr1j75m9ghi7rrm@ds125021.mlab.com:25021/heroku_8r5bwnlw"
 );
 
 var Job = require("./models/job");
@@ -20,34 +26,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const key = '1234-5678-90';
 //app.use(cookieParser(key));
-app.use(session({
-  name: 'session-id',
-  secret: key,
-  saveUninitialized: false,
-  resave: false,
-  store: new fileStore()
-}));
+
+// app.use(session({
+//   name: 'session-id',
+//   secret: key,
+//   saveUninitialized: false,
+//   resave: false,
+//   store: new fileStore()
+// }));
 
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 // AUTHENTICATION
   
-app.use('/users', users);
-function auth (req, res, next) {
- console.log(req.session);
+ app.use('/users', users);
 
-  if (!req.user) {
-        var err = new Error('You are not authenticated!');
-        err.status = 403;
-        return next(err);
-    }
-  else {
-        next();
-  }
-}
+// app.use(express.static(path.join(__dirname, 'public')));
+// function auth (req, res, next) {
+//  console.log(req.session);
 
-app.use(auth);
+//   if (!req.user) {
+//         var err = new Error('You are not authenticated!');
+//         err.status = 403;
+//         return next(err);
+//     }
+//   else {
+//         next();
+//   }
+// }
+
+// app.use(auth);
 
 // EVERYTHING AFTER IS AFTER AUTH
 
