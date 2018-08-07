@@ -23,7 +23,7 @@ router
 });
 
 router
-.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+//.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .post('/signup', cors.corsWithOptions, function(req, res, next) {
     User.register( new User({ username: req.body.username}), 
         req.body.password, (err, user) => {
