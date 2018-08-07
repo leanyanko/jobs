@@ -8,6 +8,9 @@ var passport = require('passport');
 var authenticate = require('./authenticate');
 var config = require('./config');
 
+var createError = require('http-errors');
+//var fs =  require('session-file-store')(session);//require('fs');
+
 const url = config.mongoUrl;
 var db = mongoose.connect(
   url
@@ -20,7 +23,16 @@ var db = mongoose.connect(
 var Job = require("./models/job");
 var users = require ('./routes/users');
 var app = express();
-var port = process.env.PORT || 3000;
+//
+// app.all('*', (req, res, next) => {
+//   if(req.secure) {
+//     return next();
+//   }
+//   else {
+//     res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+//   }
+// });
+//var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -78,6 +90,8 @@ app.get("/", function(req, res) {
   res.send("welcome to my api");
 });
 
-app.listen(port, function() {
-  console.log("Running port " + port);
-});
+// app.listen(port, function() {
+//   console.log("Running port " + port);
+// });
+
+module.exports = app;

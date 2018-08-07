@@ -8,7 +8,13 @@ var authenticate = require('../authenticate');
 router.use(bodyParser.json());
 
 router.get('/', function(req, res, next){
-    res.send('respond with resourse');
+    User.find(function(err, users) {
+        if (err) res.status(500).send(err);
+        else {
+          res.json(users);
+        }
+    });
+   // res.send('respond with resourse');
 });
 
 router.post('/signup', function(req, res, next) {
