@@ -8,7 +8,7 @@ var passport = require('passport');
 var authenticate = require('./authenticate');
 var config = require('./config');
 
-var createError = require('http-errors');
+//var createError = require('http-errors');
 //var fs =  require('session-file-store')(session);//require('fs');
 
 const url = config.mongoUrl;
@@ -36,7 +36,7 @@ var app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const key = '1234-5678-90';
+//const key = '1234-5678-90';
 //app.use(cookieParser(key));
 
 // app.use(session({
