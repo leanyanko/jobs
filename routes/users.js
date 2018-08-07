@@ -22,7 +22,11 @@ router
    // res.send('respond with resourse');
 });
 
-router.post('/signup', cors.corsWithOptions, function(req, res, next) {
+router
+.options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+})
+.post('/signup', cors.corsWithOptions, function(req, res, next) {
     User.register( new User({ username: req.body.username}), 
         req.body.password, (err, user) => {
         if(err) {
@@ -43,7 +47,11 @@ router.post('/signup', cors.corsWithOptions, function(req, res, next) {
     });
 });
 
-router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res, next) => {
+router
+.options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+})
+.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res, next) => {
     var token = authenticate.getToken({ _id:req.user._id });
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -54,7 +62,11 @@ router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req
     });
 });
 
-router.get('/logout', (req, res) => {
+router
+.options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+})
+.get('/logout', (req, res) => {
     if (req.session) {
         req.session.destroy();
         res.clearCookie('session-id');
