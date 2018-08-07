@@ -9,9 +9,7 @@ var routes = function(Job) {
 
     jobRouter
         .route("/")
-        .options(cors.corsWithOptions, (req, res) => {
-          res.sendStatus(200);
-        })
+        .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 
         .post(cors.corsWithOptions, authenticate.verifyUser, jobController.post)
         .get(cors.cors, jobController.get)
@@ -33,9 +31,7 @@ var routes = function(Job) {
 
     jobRouter
       .route("/:jobId")
-      .options(cors.corsWithOptions, (req, res) => {
-          res.sendStatus(200);
-        })
+      .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 
       .get(cors.cors, function(req, res) {
           res.json(req.job);

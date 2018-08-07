@@ -25,11 +25,15 @@ const app = express();
 const whitelist = ['http://localhost:3000', 'https://localhost:3443', 'https://essteem.herokuapp.com/', 'https://essteem.herokuapp.com'];
 var corsOptionsDelegate = (req, callback) => {
     var corsOptions;
+
     console.log(req.header('Origin'));
-    if(whitelist.indexOf(req.header('Origin')) !== -1) {
+
+    if (whitelist.indexOf(req.header('Origin')) !== -1) {
+        console.log('access');
         corsOptions = { origin: true };
     }
     else {
+        console.log('NOaccess');
         corsOptions = { origin: false };
     }
     callback(null, corsOptions);

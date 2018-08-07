@@ -23,9 +23,7 @@ router
 });
 
 router
-.options(cors.corsWithOptions, (req, res) => {
-    res.sendStatus(200);
-})
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .post('/signup', cors.corsWithOptions, function(req, res, next) {
     User.register( new User({ username: req.body.username}), 
         req.body.password, (err, user) => {
@@ -48,9 +46,7 @@ router
 });
 
 router
-.options(cors.corsWithOptions, (req, res) => {
-    res.sendStatus(200);
-})
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res, next) => {
     var token = authenticate.getToken({ _id:req.user._id });
     res.statusCode = 200;
@@ -63,9 +59,7 @@ router
 });
 //
 router
-.options(cors.corsWithOptions, (req, res) => {
-    res.sendStatus(200);
-})
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get('/logout', (req, res) => {
     if (req.session) {
         req.session.destroy();
